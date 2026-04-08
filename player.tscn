@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://dl1r35j4vhbya"]
+
+[ext_resource type="Texture2D" uid="uid://cakybcxbubonw" path="res://Clownfish.png" id="1_4flbx"]
+[ext_resource type="Script" uid="uid://c83ed3fmt0ybw" path="res://player.gd" id="1_onrkg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_onrkg"]
+size = Vector2(72, 35)
+
+[node name="CharacterBody2D" type="CharacterBody2D"]
+script = ExtResource("1_onrkg")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(410.75, 340.5)
+scale = Vector2(0.06206596, 0.05401235)
+texture = ExtResource("1_4flbx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(410.49997, 340.5)
+shape = SubResource("RectangleShape2D_onrkg")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(577, 328)
+limit_left = -9999994
+limit_top = -48
+limit_right = 10000006
+limit_bottom = 1080
+position_smoothing_enabled = true
+rotation_smoothing_enabled = true
