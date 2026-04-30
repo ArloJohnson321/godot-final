@@ -1,30 +1,37 @@
 extends CharacterBody2D
 
-const SPEED = 300.0
-const SCREEN_LEFT = 40.0
-const SCREEN_RIGHT = 1112.0
+# how fast george moves
+var speed = 300
+var health = 100
 
-var health := 100
-signal health_changed(new_health: int)
+signal health_changed(new_health)
 
 
-func _ready() -> void:
+func _ready():
 	add_to_group("player")
 
 
-func _physics_process(_delta: float) -> void:
-	var direction := Input.get_axis("ui_left", "ui_right")
-	if direction:
-		velocity.x = direction * SPEED
+func _physics_process(delta):
+	# move left and right with arrow keys
+	var direction = Input.get_axis("ui_left", "ui_right")
+	if direction != 0:
+		velocity.x = direction * speed
 	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
+		# slow down when not pressing anything
+		velocity.x = move_toward(velocity.x, 0, speed)
 
 	move_and_slide()
 
-	position.x = clamp(position.x, SCREEN_LEFT, SCREEN_RIGHT)
+	# keep george on the screen
+	if position.x < 40:
+		position.x = 40
+	if position.x > 1112:
+		position.x = 1112
 
 
-func take_damage(amount: int) -> void:
-	health -= amount
-	health = max(health, 0)
+func take_damage(amount):
+	health = health - amount
+	if health < 0:
+		health = 0
+	print("george got hit! health is now: ", health)
 	health_changed.emit(health)

@@ -1,109 +1,123 @@
 extends Node2D
 
-const BASE_SPAWN_INTERVAL := 2.0
-const MIN_SPAWN_INTERVAL := 0.3
-const MAX_DIFFICULTY_SCORE := 300
-const PASSIVE_SCORE_INTERVAL := 2.0
+# game variables
+var score = 0
+var game_over = false
+var time_since_last_score = 0
 
-var score := 0
-var _passive_score_timer := 0.0
-var _game_over_triggered := false
+# spawning stuff
+var spawn_time = 2.0  # how long between spawns
 
-@onready var player: CharacterBody2D = $CharacterBody2D
-@onready var spawn_timer: Timer = $SpawnTimer
-@onready var score_label: Label = $HUD/ScoreLabel
-@onready var health_bar: ProgressBar = $HUD/HealthBar
-@onready var game_over_panel: Panel = $HUD/GameOverPanel
-@onready var final_score_label: Label = $HUD/GameOverPanel/VBoxContainer/FinalScoreLabel
-@onready var pause_panel: Panel = $HUD/PausePanel
+@onready var player = $CharacterBody2D
+@onready var spawn_timer = $SpawnTimer
+@onready var score_label = $HUD/ScoreLabel
+@onready var health_bar = $HUD/HealthBar
+@onready var game_over_panel = $HUD/GameOverPanel
+@onready var final_score_label = $HUD/GameOverPanel/VBoxContainer/FinalScoreLabel
+@onready var pause_panel = $HUD/PausePanel
 
-var bubble_scene := preload("res://scenes/area_2d.tscn")
-var coin_scene := preload("res://scenes/coin.tscn")
+# preload the scenes for the items
+var bubble_scene = preload("res://scenes/area_2d.tscn")
+var coin_scene = preload("res://scenes/coin.tscn")
 
 
-func _ready() -> void:
+func _ready():
 	player.health_changed.connect(_on_health_changed)
 	spawn_timer.timeout.connect(_on_spawn_timer_timeout)
+	# hide panels at start
 	game_over_panel.visible = false
 	pause_panel.visible = false
-	spawn_timer.wait_time = BASE_SPAWN_INTERVAL
+	spawn_timer.wait_time = spawn_time
 	spawn_timer.start()
+	print("game started!")
 
 
-func _process(delta: float) -> void:
-	_passive_score_timer += delta
-	if _passive_score_timer >= PASSIVE_SCORE_INTERVAL:
-		_passive_score_timer = 0.0
-		_add_score(1)
+func _process(delta):
+	if game_over == true:
+		return
+	# add 1 to score every 2 seconds for surviving
+	time_since_last_score = time_since_last_score + delta
+	if time_since_last_score >= 2.0:
+		time_since_last_score = 0
+		add_score(1)
 
 
-func _on_health_changed(new_health: int) -> void:
+func _on_health_changed(new_health):
 	health_bar.value = new_health
-	if new_health <= 0 and not _game_over_triggered:
-		_game_over_triggered = true
-		_game_over()
+	if new_health <= 0 and game_over == false:
+		game_over = true
+		do_game_over()
 
 
-func _add_score(amount: int) -> void:
-	score += amount
+func add_score(amount):
+	score = score + amount
 	score_label.text = "Score: " + str(score)
-	_update_difficulty()
+	# make the game faster as the score gets higher
+	update_difficulty()
 
 
-func _update_difficulty() -> void:
-	var t := clampf(float(score) / float(MAX_DIFFICULTY_SCORE), 0.0, 1.0)
-	spawn_timer.wait_time = lerpf(BASE_SPAWN_INTERVAL, MIN_SPAWN_INTERVAL, t)
+# makes things faster the more points you have
+func update_difficulty():
+	# max difficulty at 300 points
+	if score >= 300:
+		spawn_timer.wait_time = 0.3
+	else:
+		# slowly decrease the spawn time
+		var t = float(score) / 300.0
+		spawn_timer.wait_time = 2.0 - (t * (2.0 - 0.3))
 
 
-func _on_spawn_timer_timeout() -> void:
-	_spawn_item()
+func _on_spawn_timer_timeout():
+	spawn_item()
 
 
-func _spawn_item() -> void:
-	var item: Area2D
-	if randf() < 0.6:
+func spawn_item():
+	var item
+	# 60% chance bubble, 40% chance coin
+	var roll = randf()
+	if roll < 0.6:
 		item = bubble_scene.instantiate()
 	else:
 		item = coin_scene.instantiate()
-		item.coin_collected.connect(_on_coin_collected)
+		item.coin_collected.connect(add_score)
 
-	var x := randf_range(50.0, 1100.0)
-	item.position = Vector2(x, -50.0)
+	# random x position across the screen
+	var x = randf_range(50, 1100)
+	item.position = Vector2(x, -50)
 
-	var speed_mult := 1.0 + float(score) / 150.0
-	item.fall_speed *= speed_mult
+	# make items fall faster as score increases
+	var speed_mult = 1.0 + (float(score) / 150.0)
+	item.fall_speed = item.fall_speed * speed_mult
 
 	add_child(item)
 
 
-func _on_coin_collected(value: int) -> void:
-	_add_score(value)
-
-
-func _game_over() -> void:
+func do_game_over():
 	spawn_timer.stop()
 	final_score_label.text = "Score: " + str(score)
 	game_over_panel.visible = true
 	get_tree().paused = true
+	print("game over! final score: ", score)
 
 
-func _on_pause_button_pressed() -> void:
-	if _game_over_triggered:
+func _on_pause_button_pressed():
+	if game_over == true:
 		return
+	# toggle pause
 	get_tree().paused = !get_tree().paused
 	pause_panel.visible = get_tree().paused
 
 
-func _on_resume_pressed() -> void:
+func _on_resume_pressed():
 	get_tree().paused = false
 	pause_panel.visible = false
 
 
-func _on_restart_pressed() -> void:
+func _on_restart_pressed():
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/game.tscn")
 
 
-func _on_main_menu_pressed() -> void:
+func _on_main_menu_pressed():
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/control.tscn")
