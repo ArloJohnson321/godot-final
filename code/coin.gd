@@ -1,7 +1,8 @@
 extends Area2D
 
-var fall_speed := 250.0
-var damage := 25
+var fall_speed := 200.0
+var score_value := 10
+signal coin_collected(value: int)
 
 
 func _ready() -> void:
@@ -16,5 +17,5 @@ func _process(delta: float) -> void:
 
 func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("player"):
-		body.take_damage(damage)
+		coin_collected.emit(score_value)
 		queue_free()
