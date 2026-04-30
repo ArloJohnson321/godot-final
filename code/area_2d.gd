@@ -1,11 +1,26 @@
 extends Area2D
 
+# how fast the bubble falls
+var fall_speed = 250
+# how much damage it does
+var damage = 25
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
+
+func _ready():
+	# connect so it knows when george touches it
+	body_entered.connect(_on_body_entered)
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	position.y += 250 * delta
+func _process(delta):
+	# make it fall down
+	position.y = position.y + (fall_speed * delta)
+	# delete it if it goes off the bottom of the screen
+	if position.y > 1300:
+		queue_free()
+
+
+func _on_body_entered(body):
+	if body.is_in_group("player"):
+		print("bubble hit george!")
+		body.take_damage(damage)
+		queue_free()

@@ -1,16 +1,149 @@
-[gd_scene load_steps=4 format=3 uid="uid://c7q8t4338115f"]
+[gd_scene load_steps=5 format=3 uid="uid://c7q8t4338115f"]
 
-[ext_resource type="PackedScene" uid="uid://bkxxtkrgge67t" path="res://scenes/area_2d.tscn" id="1_80nbo"]
-[ext_resource type="PackedScene" uid="uid://dl1r35j4vhbya" path="res://scenes/player.tscn" id="2_e2o6t"]
-[ext_resource type="PackedScene" uid="uid://by8b6u4ybgkf4" path="res://scenes/background.tscn" id="3_feb5d"]
+[ext_resource type="PackedScene" uid="uid://dl1r35j4vhbya" path="res://scenes/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" uid="uid://by8b6u4ybgkf4" path="res://scenes/background.tscn" id="2_bg"]
+[ext_resource type="Script" uid="uid://bda4d3game0001" path="res://code/game.gd" id="3_game"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.1, 0.1, 0.3, 0.85)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="Game" type="Node2D"]
+script = ExtResource("3_game")
 
-[node name="Area2D" parent="." instance=ExtResource("1_80nbo")]
-position = Vector2(145, 38)
-
-[node name="CharacterBody2D" parent="." instance=ExtResource("2_e2o6t")]
-
-[node name="TextureRect" parent="." instance=ExtResource("3_feb5d")]
+[node name="Background" parent="." instance=ExtResource("2_bg")]
 z_index = -20
 position = Vector2(-63, -51)
+
+[node name="CharacterBody2D" parent="." instance=ExtResource("1_player")]
+position = Vector2(576, 540)
+
+[node name="SpawnTimer" type="Timer" parent="."]
+wait_time = 2.0
+autostart = false
+
+[node name="HUD" type="CanvasLayer" parent="."]
+process_mode = 3
+
+[node name="ScoreLabel" type="Label" parent="HUD"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 300.0
+offset_bottom = 60.0
+theme_override_font_sizes/font_size = 28
+text = "Score: 0"
+
+[node name="HealthBar" type="ProgressBar" parent="HUD"]
+offset_left = 20.0
+offset_top = 65.0
+offset_right = 280.0
+offset_bottom = 90.0
+max_value = 100.0
+value = 100.0
+
+[node name="PauseButton" type="Button" parent="HUD"]
+offset_left = 1080.0
+offset_top = 15.0
+offset_right = 1140.0
+offset_bottom = 55.0
+theme_override_font_sizes/font_size = 22
+text = "II"
+
+[node name="PausePanel" type="Panel" parent="HUD"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -140.0
+offset_right = 180.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/PausePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="PausedLabel" type="Label" parent="HUD/PausePanel/VBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 36
+text = "PAUSED"
+
+[node name="ResumeButton" type="Button" parent="HUD/PausePanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Resume"
+
+[node name="MainMenuButton" type="Button" parent="HUD/PausePanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Main Menu"
+
+[node name="GameOverPanel" type="Panel" parent="HUD"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -175.0
+offset_right = 200.0
+offset_bottom = 175.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/GameOverPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="GameOverLabel" type="Label" parent="HUD/GameOverPanel/VBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 40
+text = "GAME OVER"
+
+[node name="FinalScoreLabel" type="Label" parent="HUD/GameOverPanel/VBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 24
+text = "Score: 0"
+
+[node name="RestartButton" type="Button" parent="HUD/GameOverPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Play Again"
+
+[node name="MainMenuButton" type="Button" parent="HUD/GameOverPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Main Menu"
+
+[connection signal="pressed" from="HUD/PauseButton" to="." method="_on_pause_button_pressed"]
+[connection signal="pressed" from="HUD/PausePanel/VBoxContainer/ResumeButton" to="." method="_on_resume_pressed"]
+[connection signal="pressed" from="HUD/PausePanel/VBoxContainer/MainMenuButton" to="." method="_on_main_menu_pressed"]
+[connection signal="pressed" from="HUD/GameOverPanel/VBoxContainer/RestartButton" to="." method="_on_restart_pressed"]
+[connection signal="pressed" from="HUD/GameOverPanel/VBoxContainer/MainMenuButton" to="." method="_on_main_menu_pressed"]
