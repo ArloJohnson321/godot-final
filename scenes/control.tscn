@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://cjb15kdwkv0ji"]
 
-[ext_resource type="Script" uid="uid://c1ukp3lbuihgy" path="res://scenes/main_menu.gd" id="1_brbbq"]
+[ext_resource type="Script" uid="uid://c1ukp3lbuihgy" path="res://code/main_menu.gd" id="1_brbbq"]
 [ext_resource type="Texture2D" uid="uid://b8t8eyybl03td" path="res://assets/Background.png" id="1_r67kn"]
 [ext_resource type="Texture2D" uid="uid://c4vft5u5kdu4d" path="res://assets/Cool Text - George and the Air Bubbles 506019988814851.png" id="2_brbbq"]
 
