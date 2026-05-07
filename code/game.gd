@@ -25,7 +25,7 @@ func _ready():
 	pause_panel.visible = false
 	spawn_timer.wait_time = spawn_time
 	spawn_timer.start()
-
+	
 
 func _process(delta):
 	if game_over == true:
@@ -84,6 +84,8 @@ func do_game_over():
 	final_score_label.text = "Score: " + str(score)
 	game_over_panel.visible = true
 	get_tree().paused = true
+	if score > high_score:
+		high_score = score
 
 
 func _on_pause_button_pressed():

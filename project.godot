@@ -15,6 +15,10 @@ run/main_scene="uid://cjb15kdwkv0ji"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://assets/icon.svg"
 
+[autoload]
+
+Global="*res://code/Global.gd"
+
 [input]
 
 ui_accept={
