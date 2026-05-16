@@ -25,14 +25,6 @@ func _on_exit_pressed():
 	get_tree().quit()
 
 
-
-	
-
-
-func _on_ready() -> void:
-	_refresh_score()
-
-
 func _on_reset_high_score_button_pressed() -> void:
 	Global.save_data.high_score = 0
 	Global.save_data.save()
