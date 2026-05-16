@@ -26,6 +26,8 @@ func _on_exit_pressed():
 
 
 func _on_reset_high_score_button_pressed() -> void:
+	if Global.save_data == null:
+		return
 	Global.save_data.high_score = 0
 	Global.save_data.save()
 	_refresh_score()
