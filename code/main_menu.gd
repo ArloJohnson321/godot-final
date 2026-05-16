@@ -23,5 +23,3 @@ func _on_exit_pressed():
 func _on_ready() -> void:
 	var high_score = Global.save_data.high_score
 	score.text = "High Score: " + str(high_score)
-	Global.save_data.high_score = 10
-	Global.save_data.save()

@@ -16,7 +16,7 @@ var spawn_time = 2.0
 
 var bubble_scene = preload("res://scenes/area_2d.tscn")
 var coin_scene = preload("res://scenes/coin.tscn")
-
+var min_spawn_time = 1.0
 
 func _ready():
 	player.health_changed.connect(_on_health_changed)
@@ -50,11 +50,10 @@ func add_score(amount):
 
 
 func update_difficulty():
-	if score >= 300:
-		spawn_timer.wait_time = 0.3
+	if score >= 100:
+		spawn_timer.wait_time = 0.15
 	else:
-		var time = float(score) / 300.0
-		spawn_timer.wait_time = .75
+		spawn_timer.wait_time = .35
 
 
 func _on_spawn_timer_timeout():
@@ -64,7 +63,7 @@ func _on_spawn_timer_timeout():
 func spawn_item():
 	var item
 	var roll = randf()
-	if roll < 0.95:
+	if roll < 0.8:
 		item = bubble_scene.instantiate()
 	else:
 		item = coin_scene.instantiate()
@@ -73,7 +72,7 @@ func spawn_item():
 	var x = randf_range(50, 1100)
 	item.position = Vector2(x, -50)
 
-	var speed_mult = 1.0 + (float(score) / 150.0)
+	var speed_mult = 1.0 + (float(score) / 100.0)
 	item.fall_speed = item.fall_speed * speed_mult
 
 	add_child(item)
@@ -84,9 +83,9 @@ func do_game_over():
 	final_score_label.text = "Score: " + str(score)
 	game_over_panel.visible = true
 	get_tree().paused = true
-	if score > high_score:
-		high_score = score
-
+	if score > Global.save_data.high_score:
+		Global.save_data.highscore = score
+		Global.save_data.save()
 
 func _on_pause_button_pressed():
 	if game_over == true:

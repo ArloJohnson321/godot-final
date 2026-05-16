@@ -1,6 +1,6 @@
 extends Area2D
 
-var fall_speed = 400
+var fall_speed = 250
 var score_value = 10
 
 signal coin_collected(value)
