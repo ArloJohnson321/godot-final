@@ -84,7 +84,7 @@ func do_game_over():
 	game_over_panel.visible = true
 	get_tree().paused = true
 	if score > Global.save_data.high_score:
-		Global.save_data.highscore = score
+		Global.save_data.high_score = score
 		Global.save_data.save()
 
 func _on_pause_button_pressed():
