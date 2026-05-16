@@ -38,7 +38,5 @@ func _on_back_button_pressed() -> void:
 
 
 func _refresh_score() -> void:
-	var high_score = 0
-	if Global.save_data != null:
-		high_score = Global.save_data.high_score
+	var high_score = Global.save_data.high_score if Global.save_data != null else 0
 	score.text = "High Score: " + str(high_score)
